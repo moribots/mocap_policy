@@ -36,6 +36,7 @@ flowchart TD
     E_Initial_Traj_Node -- As Reference/Seed Data --> E_Training_Data_Pool
     E_DREAMGEN -- Augmented Synthetic Data --> E_Training_Data_Pool
     E_Training_Data_Pool --> E_Iterative_Loop
+    E_Train_Teacher -- Policy Effectiveness --> CURRICULUM
     CURRICULUM -- Assistive Curriculum --> E_Train_Teacher
     E_Iterative_Loop -- Refined Privileged Teacher Policy --> E_Distill
     E_Distill -- EE Setpoints (preferred) / Joint Commands --> F_EXEC["Execution on Real Robot"]
