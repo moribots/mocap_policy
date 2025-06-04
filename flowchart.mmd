@@ -5,7 +5,7 @@ config:
 flowchart TD
  subgraph E_Iterative_Loop[" "]
     direction LR
-        E_VLM_Polish["VLM Semantic/Expressive Polish on Trajectories/Policy Behavior - HARMON-style"]
+        CURRICULUM["Virtual Object Control"]
         E_Train_Teacher["Train Teacher Policy: RL/IL + Domain Randomization"]
   end
  subgraph Sim_Training_Pipeline["Core Refinement &amp; Policy Learning in Sim"]
@@ -36,8 +36,7 @@ flowchart TD
     E_Initial_Traj_Node -- As Reference/Seed Data --> E_Training_Data_Pool
     E_DREAMGEN -- Augmented Synthetic Data --> E_Training_Data_Pool
     E_Training_Data_Pool --> E_Iterative_Loop
-    E_Train_Teacher --> E_VLM_Polish
-    E_VLM_Polish -- Refined Data/Guidance --> E_Train_Teacher
+    CURRICULUM -- Assistive Curriculum --> E_Train_Teacher
     E_Iterative_Loop -- Refined Privileged Teacher Policy --> E_Distill
     E_Distill -- EE Setpoints (preferred) / Joint Commands --> F_EXEC["Execution on Real Robot"]
     F_EXEC_L_Input --> F_EXEC_L_MPC
