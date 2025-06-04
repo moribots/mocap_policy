@@ -26,7 +26,6 @@ E_Initial_Traj_Node["Initial Robot Trajectory"]
 
 E_DREAMGEN("Generative Models for Data Scaling & Novelty - DREAMGEN-style")
 
-MoCap_For_DREAMGEN["MoCap/Other Motion Data for Augmentation"]
 
 E_Training_Data_Pool{{"Training Data Pool for Teacher Policy"}}
 
@@ -35,18 +34,6 @@ E_Iterative_Loop
 E_Distill("Policy Distillation - DextrAH-RGB style")
 
 MAIN_POLICY_OUTPUT["Main Policy Output"]
-
-end
-
-subgraph Critical_Interaction_Handling["Critical Interaction Phases Handling"]
-
-direction TB
-
-E_EgoZero_Learn("Morphology-Agnostic Policy Learning - EgoZero-style")
-
-EgoZero_Data["Human Demos / Egocentric Data for Critical Interactions"]
-
-CRIT_POLICY_OUTPUT["Specialized Policy Output"]
 
 end
 
@@ -82,11 +69,11 @@ B --> C{"Kinematic IK Retargeting"}
 
 C -- Initial Robot Trajectory --> E_Initial_Traj_Node
 
-MoCap_For_DREAMGEN --> E_DREAMGEN
-
-E_DREAMGEN -- Augmented Synthetic Data --> E_Training_Data_Pool
+E_Initial_Traj_Node --> E_DREAMGEN
 
 E_Initial_Traj_Node -- As Reference/Seed Data --> E_Training_Data_Pool
+
+E_DREAMGEN -- Augmented Synthetic Data --> E_Training_Data_Pool
 
 E_Training_Data_Pool --> E_Iterative_Loop
 
@@ -98,15 +85,7 @@ E_Iterative_Loop -- Refined Privileged Teacher Policy --> E_Distill
 
 E_Distill -- Student Policy (General Robust Policy) --> MAIN_POLICY_OUTPUT
 
-EgoZero_Data --> E_EgoZero_Learn
-
-E_EgoZero_Learn -- Specialized Interaction Policy --> CRIT_POLICY_OUTPUT
-
-MAIN_POLICY_OUTPUT --> EXEC_DECISION{"Execution Decision Logic / Policy Orchestration"}
-
-CRIT_POLICY_OUTPUT --> EXEC_DECISION
-
-EXEC_DECISION -- Final Motion Plan / Policy Action --> F_EXEC["Execution on Real Robot"]
+MAIN_POLICY_OUTPUT -- Final Motion Plan / Policy Action --> F_EXEC["Execution on Real Robot"]
 
 F_EXEC_L_Input --> F_EXEC_L_MPC
 
@@ -123,8 +102,6 @@ F_EXEC_U_Decision -- EE Setpoints --> F_EXEC_U_EESC
 F_EXEC_U_EESC --> F_EXEC_U_Cmds
 
 style E_Iterative_Loop fill:#ececff,stroke:#999,stroke-width:2px
-
-style Critical_Interaction_Handling fill:#e6ffe6,stroke:#999,stroke-width:2px
 
 style F_EXEC_Lower fill:#fff0e6,stroke:#999,stroke-width:2px
 
