@@ -1,108 +1,50 @@
 ---
-
 config:
-
-layout: dagre
-
+  layout: dagre
 ---
-
 flowchart TD
-
-subgraph E_Iterative_Loop[" "]
-
-direction LR
-
-E_VLM_Polish["VLM Semantic/Expressive Polish on Trajectories/Policy Behavior - HARMON-style"]
-
-E_Train_Teacher["Train Teacher Policy: RL/IL + Domain Randomization"]
-
-end
-
-subgraph Sim_Training_Pipeline["Core Refinement & Policy Learning in Sim"]
-
-direction TB
-
-E_Initial_Traj_Node["Initial Robot Trajectory"]
-
-E_DREAMGEN("Generative Models for Data Scaling & Novelty - DREAMGEN-style")
-
-
-E_Training_Data_Pool{{"Training Data Pool for Teacher Policy"}}
-
-E_Iterative_Loop
-
-E_Distill("Policy Distillation - DextrAH-RGB style")
-
-MAIN_POLICY_OUTPUT["Main Policy Output"]
-
-end
-
-subgraph F_EXEC_Lower["Lower Body Execution"]
-
-F_EXEC_L_MPC("Model Predictive Control - MPC")
-
-F_EXEC_L_Input["Desired Pelvis Motion from EXEC_DECISION"]
-
-F_EXEC_L_Cmds["Lower Body Joint Commands"]
-
-end
-
-subgraph F_EXEC_Upper["Upper Body Execution"]
-
-direction TB
-
-F_EXEC_U_Decision{"Output Type?"}
-
-F_EXEC_U_Input["Desired Upper Body Motion from EXEC_DECISION"]
-
-F_EXEC_U_JC("Joint Controller")
-
-F_EXEC_U_Cmds["Upper Body Joint Commands"]
-
-F_EXEC_U_EESC("Learned Controller + OSCBFs")
-
-end
-
-A["Human MoCap Data"] --> B("SMPL Model Fitting")
-
-B --> C{"Kinematic IK Retargeting"}
-
-C -- Initial Robot Trajectory --> E_Initial_Traj_Node
-
-E_Initial_Traj_Node --> E_DREAMGEN
-
-E_Initial_Traj_Node -- As Reference/Seed Data --> E_Training_Data_Pool
-
-E_DREAMGEN -- Augmented Synthetic Data --> E_Training_Data_Pool
-
-E_Training_Data_Pool --> E_Iterative_Loop
-
-E_Train_Teacher --> E_VLM_Polish
-
-E_VLM_Polish -- Refined Data/Guidance --> E_Train_Teacher
-
-E_Iterative_Loop -- Refined Privileged Teacher Policy --> E_Distill
-
-E_Distill -- Student Policy (General Robust Policy) --> MAIN_POLICY_OUTPUT
-
-MAIN_POLICY_OUTPUT -- EE Setpoints (preferred) / Joint Commands --> F_EXEC["Execution on Real Robot"]
-
-F_EXEC_L_Input --> F_EXEC_L_MPC
-
-F_EXEC_L_MPC --> F_EXEC_L_Cmds
-
-F_EXEC_U_Input --> F_EXEC_U_Decision
-
-F_EXEC_U_Decision -- Joint Configurations --> F_EXEC_U_JC
-
-F_EXEC_U_JC --> F_EXEC_U_Cmds
-
-F_EXEC_U_Decision -- EE Setpoints --> F_EXEC_U_EESC
-
-F_EXEC_U_EESC --> F_EXEC_U_Cmds
-
-style E_Iterative_Loop fill:#ececff,stroke:#999,stroke-width:2px
-
-style F_EXEC_Lower fill:#fff0e6,stroke:#999,stroke-width:2px
-
-style F_EXEC_Upper fill:#fff0e6,stroke:#999,stroke-width:2px
+ subgraph E_Iterative_Loop[" "]
+    direction LR
+        E_VLM_Polish["VLM Semantic/Expressive Polish on Trajectories/Policy Behavior - HARMON-style"]
+        E_Train_Teacher["Train Teacher Policy: RL/IL + Domain Randomization"]
+  end
+ subgraph Sim_Training_Pipeline["Core Refinement &amp; Policy Learning in Sim"]
+    direction TB
+        E_Initial_Traj_Node["Initial Robot Trajectory"]
+        E_DREAMGEN("Generative Models for Data Scaling & Novelty - DREAMGEN-style")
+        E_Training_Data_Pool{{"Training Data Pool for Teacher Policy"}}
+        E_Iterative_Loop
+        E_Distill("Student Policy Distillation - DextrAH-RGB style")
+  end
+ subgraph F_EXEC_Lower["Lower Body Execution"]
+        F_EXEC_L_MPC("Model Predictive Control - MPC")
+        F_EXEC_L_Input["Desired Pelvis Motion from EXEC_DECISION"]
+        F_EXEC_L_Cmds["Lower Body Joint Commands"]
+  end
+ subgraph F_EXEC_Upper["Core Refinement &amp; Policy Learning in Sim"]
+    direction TB
+        F_EXEC_U_Decision{"Output Type?"}
+        F_EXEC_U_Input["Desired Upper Body Motion from EXEC_DECISION"]
+        F_EXEC_U_JC("Joint Controller")
+        F_EXEC_U_Cmds["Upper Body Joint Commands"]
+        F_EXEC_U_EESC("Learned Controller + OSCBFs")
+  end
+    A["Human MoCap Data"] --> B("SMPL Model Fitting")
+    B --> C{"Kinematic IK Retargeting"}
+    C -- Initial Robot Trajectory --> E_Initial_Traj_Node
+    E_Initial_Traj_Node --> E_DREAMGEN
+    E_Initial_Traj_Node -- As Reference/Seed Data --> E_Training_Data_Pool
+    E_DREAMGEN -- Augmented Synthetic Data --> E_Training_Data_Pool
+    E_Training_Data_Pool --> E_Iterative_Loop
+    E_Train_Teacher --> E_VLM_Polish
+    E_VLM_Polish -- Refined Data/Guidance --> E_Train_Teacher
+    E_Iterative_Loop -- Refined Privileged Teacher Policy --> E_Distill
+    E_Distill -- EE Setpoints (preferred) / Joint Commands --> F_EXEC["Execution on Real Robot"]
+    F_EXEC_L_Input --> F_EXEC_L_MPC
+    F_EXEC_L_MPC --> F_EXEC_L_Cmds
+    F_EXEC_U_Input --> F_EXEC_U_Decision
+    F_EXEC_U_Decision -- Joint Configurations --> F_EXEC_U_JC
+    F_EXEC_U_JC --> F_EXEC_U_Cmds
+    F_EXEC_U_Decision -- EE Setpoints --> F_EXEC_U_EESC
+    F_EXEC_U_EESC --> F_EXEC_U_Cmds
+    style E_Iterative_Loop fill:#ececff,stroke:#999,stroke-width:2px
